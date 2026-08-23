@@ -12,6 +12,7 @@ function SellerLayout() {
         { name: "Product List", path: "/seller/product-list", icon: assets.product_list_icon },
         { name: "Orders", path: "/seller/orders", icon: assets.order_icon },
         ...(isSeller ? [{ name: "Staff Management", path: "/seller/staff-management", icon: assets.profile_icon }] : []),
+        ...(isSeller ? [{ name: "Returns", path: "/seller/returns", icon: assets.order_icon }] : []),
     ];
 
     const logout = async () => {

@@ -20,6 +20,8 @@ import Orders from "./pages/seller/Orders.jsx"
 import Loading from "./components/Loading.jsx"
 import StaffDashboard from "./pages/staff/StaffDashboard.jsx"
 import StaffManagement from "./pages/seller/StaffManagement.jsx"
+import ReturnRequests from "./pages/seller/ReturnRequests.jsx"
+import StaffReturnRequests from "./pages/staff/StaffReturnRequests.jsx"
 
 function App() {
   const isSellerPath = useLocation().pathname.includes("seller");
@@ -45,11 +47,13 @@ function App() {
             <Route path="/profile" element={<Profile/>} />
             <Route path="/loader" element={<Loading/>} />
             <Route path="/staff" element={userHasStaffRole ? <StaffDashboard /> : <Home /> } />
+            <Route path="/staff/returns" element={userHasStaffRole ? <StaffReturnRequests /> : <Home />} />
             <Route path="/seller" element={canAccessSellerArea ? <SellerLayout /> : <SellerLogin /> } >
               <Route index element={canAccessSellerArea ? <AddProduct /> : null} />
               <Route path="/seller/product-list" element={<ProductList />} />
               <Route path="/seller/orders" element={<Orders />} />
               <Route path="/seller/staff-management" element={isSeller ? <StaffManagement /> : null} />
+              <Route path="/seller/returns" element={isSeller ? <ReturnRequests /> : null} />
             </Route>
           </Routes>
         </div>

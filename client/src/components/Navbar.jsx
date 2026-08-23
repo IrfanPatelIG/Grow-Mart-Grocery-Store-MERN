@@ -84,7 +84,7 @@ function Navbar() {
                         <img src={user.profileImage || assets.profile_icon} className='w-10 h-10 rounded-full object-cover' alt='profile icon'/>
                         <ul className='hidden group-hover:block absolute top-10 right-0 bg-white shadow border border-gray-200 py-2.5 w-30 rounded-md text-sm z-40'>
                             <li onClick={() => navigate("profile")} className='p-1.5 pl-3 hover:bg-primary/20 cursor-pointer'>Profile</li>
-                            <li onClick={() => navigate("my-orders")} className='p-1.5 pl-3 hover:bg-primary/20 cursor-pointer'>My Orders</li>
+                            {user?.role !== 'staff' && <li onClick={() => navigate("my-orders")} className='p-1.5 pl-3 hover:bg-primary/20 cursor-pointer'>My Orders</li>}
                             <li onClick={logout} className='p-1.5 pl-3 hover:bg-primary/20 cursor-pointer'>Logout</li>
                         </ul>
                     </div>
@@ -112,7 +112,7 @@ function Navbar() {
                     {user && (
                         <>
                             <NavLink to='/profile' onClick={() => setOpen(false)}>Profile</NavLink>
-                            <NavLink to='/my-orders' onClick={() => setOpen(false)}>My Orders</NavLink>
+                            {user?.role !== 'staff' && <NavLink to='/my-orders' onClick={() => setOpen(false)}>My Orders</NavLink>}
                         </>
                     )}
                     <NavLink to='/' onClick={() => setOpen(false)}>Contact</NavLink>

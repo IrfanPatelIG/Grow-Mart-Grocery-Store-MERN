@@ -10,7 +10,7 @@ const initialDashboard = {
 };
 
 function StaffDashboard() {
-  const { axios, currency, user } = useAppContext();
+  const { axios, currency, user, navigate } = useAppContext();
   const [dashboard, setDashboard] = useState(initialDashboard);
   const [products, setProducts] = useState([]);
   const [categoryFilter, setCategoryFilter] = useState("All");
@@ -136,8 +136,15 @@ function StaffDashboard() {
     <main className="flex-1 min-h-screen bg-gray-50 p-6 md:p-10">
       <div className="mx-auto max-w-6xl space-y-8">
         <header>
-          <p className="text-sm text-gray-500">Staff workspace</p>
-          <h1 className="text-2xl font-semibold text-gray-900">Welcome, {user?.name}</h1>
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p className="text-sm text-gray-500">Staff workspace</p>
+              <h1 className="text-2xl font-semibold text-gray-900">Welcome, {user?.name}</h1>
+            </div>
+            <button type="button" onClick={() => navigate('/staff/returns')} className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-dull">
+              Return / Exchange Orders
+            </button>
+          </div>
         </header>
 
         <section className="grid grid-cols-2 gap-4 lg:grid-cols-4">
