@@ -1,14 +1,15 @@
 # 🛒 Grow-Mart – Online Grocery Store
 
-Grow-Mart is a **full-stack MERN (MongoDB, Express, React, Node.js)** grocery app. Customers can browse products, manage a shopping cart, save addresses, and place orders via **Cash on Delivery (COD)** or **Stripe Online Payments**. Sellers/Admins can manage products and view all orders.
+Grow-Mart is a **full-stack MERN (MongoDB, Express, React, Node.js)** grocery app. Customers can browse products, manage a shopping cart, save addresses, and place orders via **Cash on Delivery (COD)** or **Stripe Online Payments**. Staff and Admin/Sellers can manage products, inventory, and customer orders.
 
 👉 Live demo: [grow-mart.vercel.app](https://grow-mart.vercel.app)
 
 ---
 
-##  Features
+## ✨ Features
 
-###  User
+### 👤 Customer
+
 - Register & login using JWT & cookies
 - Browse categories and products with offers
 - Add/remove items in the cart
@@ -16,12 +17,24 @@ Grow-Mart is a **full-stack MERN (MongoDB, Express, React, Node.js)** grocery ap
 - Checkout with:
   - **Cash on Delivery (COD)**
   - **Stripe Online Payment** (secure with webhook order updates)
-- View order history and real-time payment status
+- View order history and payment status
 
-###  Seller/Admin
-- Secure login (email + password via environment vars)
-- Add / edit / delete products (with images hosted on Cloudinary)
-- View all customer orders with payment status
+### 👷 Staff
+
+- Secure staff login
+- Manage product stock and inventory
+- View and manage customer orders
+- Update order status
+- Manage return and exchange requests
+
+### 🧑‍💼 Admin/Seller
+
+- Secure admin/seller login
+- Add / edit / delete products
+- Upload product images using Cloudinary
+- Manage product inventory
+- View and manage customer orders
+- Manage staff
 
 ---
 
