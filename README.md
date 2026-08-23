@@ -41,4 +41,4 @@ Grow-Mart is a **full-stack MERN (MongoDB, Express, React, Node.js)** grocery ap
 
 ### 👤 User Side
 - **Home Page**
-  ![Home](./client/src/assets/Home.JPG)
+  ![Home](./client/src/assets/home.JPG)
