@@ -5,19 +5,25 @@ import { Link, NavLink, Outlet } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 function SellerLayout() {
-    const { setIsSeller, navigate, axios } = useAppContext();
+    const { setIsSeller, setUser, navigate, axios, user, isSeller } = useAppContext();
 
     const sidebarLinks = [
         { name: "Add Product", path: "/seller", icon: assets.add_icon },
         { name: "Product List", path: "/seller/product-list", icon: assets.product_list_icon },
         { name: "Orders", path: "/seller/orders", icon: assets.order_icon },
+        ...(isSeller ? [{ name: "Staff Management", path: "/seller/staff-management", icon: assets.profile_icon }] : []),
     ];
 
     const logout = async () => {
         try {
-            const { data } = await axios.get('/api/seller/logout');
+            const { data } = await axios.get(user?.role === 'staff' ? '/api/user/logout' : '/api/seller/logout');
             if(data.success){
                 toast.success(data.message);
+                if(user?.role === 'staff') {
+                    sessionStorage.removeItem('userToken');
+                }
+                setUser(null);
+                setIsSeller(false);
                 navigate('/');
             }
             else{
@@ -35,7 +41,7 @@ function SellerLayout() {
                 <img className="h-17 cursor-pointer" src= {assets.logo} alt="Logo" />
             </Link>
             <div className="flex items-center gap-5 text-gray-500">
-                <p>Hi! Admin</p>
+                <p>Hi! {user?.role === 'staff' ? 'Staff' : 'Admin'}</p>
                 <button onClick={logout} className='border rounded-full text-sm px-4 py-1 cursor-pointer'>Logout</button>
             </div>
         </div>

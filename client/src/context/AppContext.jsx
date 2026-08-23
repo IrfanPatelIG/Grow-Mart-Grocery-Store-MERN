@@ -6,6 +6,13 @@ import axios from 'axios';
 
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
+axios.interceptors.request.use((config) => {
+    const userToken = sessionStorage.getItem('userToken');
+    if (userToken) {
+        config.headers.Authorization = `Bearer ${userToken}`;
+    }
+    return config;
+});
 
 export const AppContext = createContext();
 
@@ -66,6 +73,10 @@ export const AppContextProvider = ( {children} ) => {
 
     // Add product to cart
     const addToCart = (itemId) => {
+        if(user?.role === 'staff'){
+            toast.error("Staff accounts cannot purchase products");
+            return;
+        }
         let cartData = structuredClone(cartItems);
 
         if(cartData[itemId]){
@@ -138,7 +149,7 @@ export const AppContextProvider = ( {children} ) => {
                 toast.error(error.message);
             }
         }
-        if(user){
+        if(user && user.role !== 'staff'){
             updateCart();
         }
     }, [cartItems]);

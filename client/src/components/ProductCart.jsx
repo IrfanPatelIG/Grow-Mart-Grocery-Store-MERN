@@ -4,7 +4,7 @@ import { useAppContext } from "../context/AppContext";
 import { toast } from "react-hot-toast";
 
 const ProductCart = ({ product }) => {
-  const { currency, addToCart, removeFromCart, cartItems, navigate } = useAppContext();
+  const { currency, addToCart, removeFromCart, cartItems, navigate, user } = useAppContext();
 
   const cartQuantity = cartItems[product._id] || 0;
 
@@ -53,7 +53,7 @@ const ProductCart = ({ product }) => {
               </span>
             </p>
 
-            <div
+            {user?.role !== 'staff' && <div
               className="text-primary"
               onClick={(e) => {
                 e.stopPropagation();
@@ -96,7 +96,7 @@ const ProductCart = ({ product }) => {
                   </button>
                 </div>
               )}
-            </div>
+            </div>}
           </div>
         </div>
       </div>

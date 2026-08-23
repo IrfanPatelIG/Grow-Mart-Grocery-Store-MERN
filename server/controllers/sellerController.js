@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import User from '../models/User.js';
 
 // Seller Login : /api/seller/login
 export const sellerLogin = async (req, res) => {
@@ -47,3 +48,32 @@ export  const sellerLogout = async (req, res) => {
         res.json({success: false, message: error.message});
     }
 }
+
+// List database staff users : /api/seller/staff
+export const listStaff = async (req, res) => {
+    try {
+        const staff = await User.find({role: 'staff'}).select('_id name email role').sort({name: 1});
+        return res.json({success: true, staff});
+    } catch (error) {
+        console.log(error.message);
+        return res.status(500).json({success: false, message: 'Unable to fetch staff'});
+    }
+};
+
+// Demote a staff user to customer : /api/seller/staff/:id/demote
+export const demoteStaff = async (req, res) => {
+    try {
+        const staff = await User.findOneAndUpdate(
+            {_id: req.params.id, role: 'staff'},
+            {role: 'customer'},
+            {new: true}
+        ).select('_id name email role');
+        if (!staff) {
+            return res.status(404).json({success: false, message: 'Staff user not found'});
+        }
+        return res.json({success: true, message: 'Staff user demoted to customer', user: staff});
+    } catch (error) {
+        console.log(error.message);
+        return res.status(400).json({success: false, message: 'Unable to demote staff user'});
+    }
+};

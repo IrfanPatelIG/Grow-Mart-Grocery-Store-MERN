@@ -16,7 +16,8 @@ function Login() {
         e.preventDefault();
         const { data } = await axios.post(`/api/user/${state}`,  {name, email, password});
         if(data.success){
-          navigate('/');
+          sessionStorage.setItem('userToken', data.token);
+          navigate(data.user?.role === 'staff' ? '/staff' : '/');
           await fetchUser();
           setShowUserLogin(false);
         }
