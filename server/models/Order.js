@@ -11,6 +11,7 @@ const orderSchema = new mongoose.Schema({
         address: {type: String, required: false, ref: 'address'},
         fulfillmentMethod: {type: String, enum: ['delivery', 'pickup'], default: 'delivery'},
         pickupDate: {type: Date, required: false},
+        pickupTimeSlot: {type: String, required: false},
         status: {type: String, enum: ['Order Placed', 'Processing', 'Ready for Pickup', 'Out for Delivery', 'Delivered', 'Picked Up', 'Cancelled'], default: 'Order Placed'},
         autoDeliveryAt: {type: Date, required: false},
         autoDeliveryEnabled: {type: Boolean, default: true},

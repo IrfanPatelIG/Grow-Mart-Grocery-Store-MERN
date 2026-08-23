@@ -12,19 +12,47 @@ const Cart = () => {
     const [showAddress, setShowAddress] = useState(false);
     const [ selectedAddress, setSelectedAddress] = useState(null);
     const [ paymentOption, setPaymentOption] = useState("COD");
+    const [ fulfillmentMethod, setFulfillmentMethod] = useState("delivery");
+    const [ pickupDate, setPickupDate] = useState("");
+    const [ pickupTimeSlot, setPickupTimeSlot] = useState("");
 
     const placeOrder = async () => {
         try {
-            if(!selectedAddress){
-                return toast.error("Please select an address");
+            // Validate based on fulfillment method
+            if(fulfillmentMethod === 'delivery' && !selectedAddress){
+                return toast.error("Please select a delivery address");
             }
+            if(fulfillmentMethod === 'pickup' && !pickupDate){
+                return toast.error("Please select a pickup date");
+            }
+            if(fulfillmentMethod === 'pickup' && !pickupTimeSlot){
+                return toast.error("Please select a pickup time slot");
+            }
+            // Validate pickup date is not in the past
+            if(fulfillmentMethod === 'pickup' && pickupDate){
+                const selectedDate = new Date(pickupDate);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                if(selectedDate < today){
+                    return toast.error("Pickup date cannot be in the past");
+                }
+            }
+
+            const orderData = {
+                userId: user._id,
+                items: cartArray.map(item => ({product: item._id, quantity: item.quantity})),
+                fulfillmentMethod,
+                pickupDate: fulfillmentMethod === 'pickup' ? pickupDate : undefined,
+                pickupTimeSlot: fulfillmentMethod === 'pickup' ? pickupTimeSlot : undefined
+            };
+
+            if(fulfillmentMethod === 'delivery'){
+                orderData.address = selectedAddress._id;
+            }
+
             // Place order with COD
             if(paymentOption === 'COD'){
-                const { data } = await axios.post('/api/order/cod', {
-                    userId: user._id,
-                    items: cartArray.map(item => ({product: item._id, quantity: item.quantity})),
-                    address: selectedAddress._id
-                });
+                const { data } = await axios.post('/api/order/cod', orderData);
                 if(data.success){
                     toast.success(data.message);
                     setCartItems({});
@@ -35,11 +63,7 @@ const Cart = () => {
             }
             // Place order with Stripe
             else{
-                const { data } = await axios.post('/api/order/stripe', {
-                    userId: user._id,
-                    items: cartArray.map(item => ({product: item._id, quantity: item.quantity})),
-                    address: selectedAddress._id
-                });
+                const { data } = await axios.post('/api/order/stripe', orderData);
                 if(data.success){
                     setCartItems({});
                     window.location.replace(data.url);
@@ -148,28 +172,86 @@ const Cart = () => {
                 <hr className="border-gray-300 my-5" />
 
                 <div className="mb-6">
-                    <p className="text-sm font-medium uppercase">Delivery Address</p>
-                    <div className="relative flex justify-between items-start mt-2">
-                        <p className="text-gray-500"> {selectedAddress ? `${selectedAddress.street}, 
-                            ${selectedAddress.city}, ${selectedAddress.state}, ${selectedAddress.country}`
-                             : "No address found" }
-                        </p>
-                        <button onClick={() => setShowAddress(!showAddress)} className="text-primary-dull hover:underline cursor-pointer">
-                            Change
-                        </button>
-                        {showAddress && (
-                            <div className="absolute top-12 py-1 bg-white border border-gray-300 text-sm w-full">
-                                {addresses.map((address, index) => (
-                                    <p onClick={() => {setSelectedAddress(address); setShowAddress(false)}} 
-                                        className="text-gray-500 p-2 hover:bg-gray-100">
-                                        {address.street}, {address.city}, {address.state}, {address.country}.
-                                    </p>))}
-                                <p onClick={() => navigate("/add-address")} className="text-primary text-center cursor-pointer p-2 hover:bg-primary-dull">
-                                    Add address
-                                </p>
-                            </div>
-                        )}
+                    <p className="text-sm font-medium uppercase">Fulfillment Method</p>
+                    <div className="flex gap-4 mt-2">
+                        <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                                type="radio"
+                                value="delivery"
+                                checked={fulfillmentMethod === 'delivery'}
+                                onChange={(e) => setFulfillmentMethod(e.target.value)}
+                                className="w-4 h-4"
+                            />
+                            <span>Delivery</span>
+                        </label>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                                type="radio"
+                                value="pickup"
+                                checked={fulfillmentMethod === 'pickup'}
+                                onChange={(e) => setFulfillmentMethod(e.target.value)}
+                                className="w-4 h-4"
+                            />
+                            <span>Store Pickup</span>
+                        </label>
                     </div>
+
+                    {fulfillmentMethod === 'delivery' && (
+                        <div className="mt-4">
+                            <p className="text-sm font-medium uppercase">Delivery Address</p>
+                            <div className="relative flex justify-between items-start mt-2">
+                                <p className="text-gray-500"> {selectedAddress ? `${selectedAddress.street}, 
+                                    ${selectedAddress.city}, ${selectedAddress.state}, ${selectedAddress.country}`
+                                    : "No address found" }
+                                </p>
+                                <button onClick={() => setShowAddress(!showAddress)} className="text-primary-dull hover:underline cursor-pointer">
+                                    Change
+                                </button>
+                                {showAddress && (
+                                    <div className="absolute top-12 py-1 bg-white border border-gray-300 text-sm w-full">
+                                        {addresses.map((address, index) => (
+                                            <p onClick={() => {setSelectedAddress(address); setShowAddress(false)}} 
+                                                className="text-gray-500 p-2 hover:bg-gray-100">
+                                                {address.street}, {address.city}, {address.state}, {address.country}.
+                                            </p>))}
+                                        <p onClick={() => navigate("/add-address")} className="text-primary text-center cursor-pointer p-2 hover:bg-primary-dull">
+                                            Add address
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {fulfillmentMethod === 'pickup' && (
+                        <div className="mt-4 space-y-3">
+                            <div>
+                                <p className="text-sm font-medium uppercase">Pickup Date</p>
+                                <input
+                                    type="date"
+                                    value={pickupDate}
+                                    onChange={(e) => setPickupDate(e.target.value)}
+                                    min={new Date().toISOString().split('T')[0]}
+                                    className="w-full border border-gray-300 bg-white px-3 py-2 mt-2 outline-none"
+                                />
+                            </div>
+                            <div>
+                                <p className="text-sm font-medium uppercase">Pickup Time Slot</p>
+                                <select
+                                    value={pickupTimeSlot}
+                                    onChange={(e) => setPickupTimeSlot(e.target.value)}
+                                    className="w-full border border-gray-300 bg-white px-3 py-2 mt-2 outline-none"
+                                >
+                                    <option value="">Select a time slot</option>
+                                    <option value="09:00-11:00">9:00 AM - 11:00 AM</option>
+                                    <option value="11:00-13:00">11:00 AM - 1:00 PM</option>
+                                    <option value="13:00-15:00">1:00 PM - 3:00 PM</option>
+                                    <option value="15:00-17:00">3:00 PM - 5:00 PM</option>
+                                    <option value="17:00-19:00">5:00 PM - 7:00 PM</option>
+                                </select>
+                            </div>
+                        </div>
+                    )}
 
                     <p className="text-sm font-medium uppercase mt-6">Payment Method</p>
 

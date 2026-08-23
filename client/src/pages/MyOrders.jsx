@@ -153,6 +153,7 @@ function MyOrders() {
                 <div className='mt-4 rounded bg-gray-50 p-4 text-sm'>
                     <p className='font-medium text-gray-800'>Fulfillment: {order.fulfillmentMethod === 'pickup' ? 'Store Pickup' : 'Home Delivery'}</p>
                     {order.pickupDate && <p className='text-gray-500'>Pickup date: {new Date(order.pickupDate).toLocaleDateString()}</p>}
+                    {order.pickupTimeSlot && <p className='text-gray-500'>Pickup time: {order.pickupTimeSlot}</p>}
                     <div className='mt-4 grid grid-cols-5 gap-1'>
                         {(order.fulfillmentMethod === 'pickup' ? pickupSteps : deliverySteps).map((step, stepIndex, steps) => {
                             const currentIndex = order.status === 'Cancelled' ? -1 : steps.indexOf(order.status);

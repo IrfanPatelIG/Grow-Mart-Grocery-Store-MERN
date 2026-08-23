@@ -65,7 +65,7 @@ const restoreInventory = async (items, session) => {
     }
 };
 
-const createOrderWithInventory = async ({ userId, address, items, paymentType, fulfillmentMethod, pickupDate }) => {
+const createOrderWithInventory = async ({ userId, address, items, paymentType, fulfillmentMethod, pickupDate, pickupTimeSlot }) => {
     const isPickup = fulfillmentMethod === 'pickup';
     const parsedPickupDate = pickupDate ? new Date(`${pickupDate}T23:59:59`) : null;
     if ((!isPickup && !address) || (isPickup && (!pickupDate || Number.isNaN(parsedPickupDate.getTime()) || parsedPickupDate <= new Date())) || !validateItems(items)) {
@@ -89,6 +89,7 @@ const createOrderWithInventory = async ({ userId, address, items, paymentType, f
                 address,
                 fulfillmentMethod: isPickup ? 'pickup' : 'delivery',
                 pickupDate: isPickup ? parsedPickupDate : undefined,
+                pickupTimeSlot: isPickup ? pickupTimeSlot : undefined,
                 autoDeliveryAt: getAutomaticDeliveryAt(),
                 autoDeliveryPaused: false,
                 paymentType,
@@ -119,8 +120,8 @@ const releaseFailedPaymentOrder = async (orderId) => {
 // Place Order COD : /api/order/cod
 export const placeOrderCOD = async (req, res) => {
     try {
-        const { address, items, fulfillmentMethod, pickupDate } = req.body;
-        await createOrderWithInventory({userId: req.userId, address, items, paymentType: 'COD', fulfillmentMethod, pickupDate});
+        const { address, items, fulfillmentMethod, pickupDate, pickupTimeSlot } = req.body;
+        await createOrderWithInventory({userId: req.userId, address, items, paymentType: 'COD', fulfillmentMethod, pickupDate, pickupTimeSlot});
 
         return res.json({ success: true, message: "Order placed successfully!" });
     } catch (error) {
@@ -134,14 +135,14 @@ export const placeOrderStripe = async (req, res) => {
     let order;
     try {
         const userId = req.userId;
-        const { address, items, fulfillmentMethod, pickupDate } = req.body;
+        const { address, items, fulfillmentMethod, pickupDate, pickupTimeSlot } = req.body;
         const { origin } = req.headers;
 
         if ((!address && fulfillmentMethod !== 'pickup') || !validateItems(items)) {
             return res.status(400).json({ success: false, message: "Invalid data" });
         }
 
-        order = await createOrderWithInventory({userId, address, items, paymentType: 'Online', fulfillmentMethod, pickupDate});
+        order = await createOrderWithInventory({userId, address, items, paymentType: 'Online', fulfillmentMethod, pickupDate, pickupTimeSlot});
         const products = await Product.find({_id: {$in: items.map((item) => item.product)}});
         const productData = items.map((item) => {
             const product = products.find((candidate) => candidate._id.toString() === item.product.toString());
