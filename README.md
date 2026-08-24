@@ -2,7 +2,7 @@
 
 Grow-Mart is a **full-stack MERN (MongoDB, Express, React, Node.js)** grocery app. Customers can browse products, manage a shopping cart, save addresses, and place orders via **Cash on Delivery (COD)** or **Stripe Online Payments**. Staff and Admin/Sellers can manage products, inventory, and customer orders.
 
-👉 Live demo: [grow-mart.vercel.app](https://grow-mart-grocery-ca4743g3r-irfanpatel1997abc-3819s-projects.vercel.app/)
+👉 Live demo: [grow-mart.vercel.app](https://grow-mart-grocery-store.vercel.app/)
 
 ---
 

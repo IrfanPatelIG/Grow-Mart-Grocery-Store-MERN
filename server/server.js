@@ -21,8 +21,10 @@ await connectCloudinary();
 startAutomaticDeliveryScheduler();
 
 // Allow multiple origins
-const allowedOrigins = ['http://localhost:5173', 'https://mini-d-mart.vercel.app'];
-
+const allowedOrigins = [
+    'http://localhost:5173',
+    'https://grow-mart-grocery-store.vercel.app'
+];
 app.post('/stripe', express.raw({type: 'application/json'}), stripeWebhooks);
 
 // Middleware Configuration
